@@ -1,0 +1,9 @@
+DATA = LOAD....;
+S =  FOREACH (FILTER DATA BY spamType == 'spam') GENERATE mailid, session;
+SPAM = DISTINCT S;
+JOINED = JOIN DATA BY (mailid, session) LEFT OUTER, SPAM BY (mailid, session);
+
+RES = FOREACH (FILTER JOINED by SPAM::mailid is null)
+  GENERATE $0 AS message, $1 AS mailid, $2 AS session, $3 AS spamType;
+
+dump RES;
